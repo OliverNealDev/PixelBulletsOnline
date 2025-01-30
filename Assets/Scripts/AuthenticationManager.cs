@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +48,7 @@ public class AuthenticationManager : MonoBehaviour
         }
     }
     
-    async void OnLoginButtonClicked()
+    public async void OnLoginButtonClicked()
     {
         bool isSignedIn = await SignInWithUsernamePasswordAsync(loginUsernameInputField.GetComponent<TMP_InputField>().text, loginPasswordInputField.GetComponent<TMP_InputField>().text);
         if (isSignedIn)
@@ -61,7 +62,7 @@ public class AuthenticationManager : MonoBehaviour
             Debug.Log("Sign-in failed.");
         }
     }
-    async void OnRegisterButtonClicked()
+    public async void OnRegisterButtonClicked()
     {
         CachedUsername = loginUsernameInputField.GetComponent<TMP_InputField>().text;
         bool isSignedUp = await SignUpWithUsernamePasswordAsync(registerUsernameInputField.GetComponent<TMP_InputField>().text, registerPasswordInputField.GetComponent<TMP_InputField>().text);
@@ -69,7 +70,7 @@ public class AuthenticationManager : MonoBehaviour
         {
             Debug.Log("User successfully signed up.");
             UIController.instance.SwitchMenu(MenuState.MainMenu);
-            await SaveUsername(CachedUsername);
+            //await SaveUsername(CachedUsername);
             AssignUsernameToText();
         }
         else
@@ -109,6 +110,7 @@ public class AuthenticationManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
             Debug.Log("SignUp is successful.");
+            Debug.Log("username is " + username);
             await SaveUsername(username);
             return true;
         }
@@ -143,15 +145,14 @@ public class AuthenticationManager : MonoBehaviour
 
             if (savedData.TryGetValue("username", out Item usernameItem))
             {
-                var usernameString = usernameItem.Value.ToString();
-                if (usernameString != null) // ✅ Extract string correctly
+                // Deserialize the object properly
+                string json = JsonConvert.SerializeObject(usernameItem.Value);
+                string usernameString = JsonConvert.DeserializeObject<string>(json);
+
+                if (!string.IsNullOrEmpty(usernameString))
                 {
                     Debug.Log("Retrieved Username: " + usernameString);
                     return usernameString;
-                }
-                else
-                {
-                    Debug.LogError("Username is not a string.");
                 }
             }
         }

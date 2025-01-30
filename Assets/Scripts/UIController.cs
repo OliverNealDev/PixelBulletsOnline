@@ -72,14 +72,14 @@ public class UIController : MonoBehaviour
                 Cursor.lockState = CursorLockMode.None;
 
                 // Hide the cursor
-                Cursor.visible = false;
+                Cursor.visible = true;
             }
             else if (currentState == MenuState.PauseMenu)
             {
                 SwitchMenu(MenuState.InGame);
                 
                 // Lock the cursor to the center of the screen
-                Cursor.lockState = CursorLockMode.Locked;
+                //Cursor.lockState = CursorLockMode.Confined;
 
                 // Hide the cursor
                 Cursor.visible = true;
