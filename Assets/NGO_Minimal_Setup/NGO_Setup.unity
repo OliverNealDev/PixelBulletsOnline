@@ -518,6 +518,10 @@ PrefabInstance:
       value: NetworkManager
       objectReference: {fileID: 0}
     - target: {fileID: 3399671451712354058, guid: 6da2c36defcecf647a04add956114116, type: 3}
+      propertyPath: NetworkConfig.TickRate
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3399671451712354058, guid: 6da2c36defcecf647a04add956114116, type: 3}
       propertyPath: NetworkConfig.PlayerPrefab
       value: 
       objectReference: {fileID: 4280118651270339216, guid: ff5cb398a5702bf48aab1ebc80f72e51, type: 3}
@@ -602,7 +606,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   enemyMeleeOne: {fileID: 5864191430791144968, guid: d30632d3c4cb6d94fbe7c45053d7522b, type: 3}
-  enemySpawnCooldown: 3
+  enemySpawnCooldown: 10
   enemySpawnAmountPerPlayer: 1
 --- !u!4 &1504416742
 Transform:

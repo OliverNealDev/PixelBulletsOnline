@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -37,7 +38,8 @@ public class EnemyManager : NetworkBehaviour
             for (int i = 0; i < enemyAmountPerPlayer; i++)
             {
                 Vector2 enemySpawnPosition = GetRandomPositionAwayFromPlayer(playerPosition);
-                Instantiate(enemyMeleeOne, enemySpawnPosition, quaternion.identity);
+                GameObject enemy = Instantiate(enemyMeleeOne, enemySpawnPosition, quaternion.identity);
+                enemy.GetComponent<NetworkObject>().Spawn();
             }
         }
     }

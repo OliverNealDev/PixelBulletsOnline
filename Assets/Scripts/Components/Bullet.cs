@@ -4,30 +4,50 @@ using System.Collections;
 
 public class Bullet : NetworkBehaviour
 {
-    public float bulletDamage;
-    public bool isPlayerBullet;
+    public NetworkVariable<float> bulletDamage = new NetworkVariable<float>(); // Networked damage
+    public NetworkVariable<bool> isPlayerBullet = new NetworkVariable<bool>(); // Networked boolean for player bullet
     private SpriteRenderer spriteRenderer;
     private Collider2D bulletCollider;
-    private bool hasHit = false; // Prevents multiple collisions
+    private bool hasHit; // Prevents multiple collisions
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         bulletCollider = GetComponent<Collider2D>();
+
+        if (!IsServer) return;
         Invoke("Timeout", 5f);
     }
 
+    public void Initialise(bool isPlayerBullet, float bulletDamage)
+    {
+        this.isPlayerBullet.Value = isPlayerBullet; // Using NetworkVariable.Value to set the value
+        this.bulletDamage.Value = bulletDamage; // Setting damage using NetworkVariable.Value
+    }
+    
     void Timeout()
     {
-        Destroy(gameObject);
+        NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
+        if (networkObject != null && IsServer)
+        {
+            gameObject.GetComponent<NetworkObject>().Despawn();
+        }
+
+        /*if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }*/
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (hasHit) return; // Prevent multiple hits
-        if ((other.CompareTag("Player") && !isPlayerBullet) || (other.CompareTag("Enemy") && isPlayerBullet))
+        if ((other.tag == "Player" && !isPlayerBullet.Value) || (other.tag == "Enemy" && isPlayerBullet.Value))
         {
-            other.GetComponent<Health>()?.ReceiveDamage(bulletDamage);
+            Debug.Log(other.tag);
+            Debug.Log(isPlayerBullet);
+            
+            other.GetComponent<Health>()?.ReceiveDamage(bulletDamage.Value);
             StartCoroutine(FadeAndEnlarge()); // Start fade/scale effect
         }
     }
@@ -57,6 +77,15 @@ public class Bullet : NetworkBehaviour
             yield return null;
         }
 
-        Destroy(gameObject); // Remove bullet after animation
+        NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
+        if (networkObject != null && IsServer)
+        {
+            gameObject.GetComponent<NetworkObject>().Despawn();
+        }
+
+        /*if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }*/
     }
 }

@@ -21,6 +21,8 @@ public class EnemyMelee : NetworkBehaviour
 
     void FixedUpdate()
     {
+        if (!IsServer) return;
+        
         GameObject nearestPlayer = FindNearestPlayer();
         if (nearestPlayer != null)
         {

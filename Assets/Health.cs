@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode;
 
-public class Health : MonoBehaviour
+public class Health : NetworkBehaviour
 {
     public float maxHealth = 100f;
     private float currentHealth;
@@ -21,10 +22,25 @@ public class Health : MonoBehaviour
     public void ReceiveDamage(float damage)
     {
         currentHealth -= damage;
-        if (currentHealth <= 0) Destroy(gameObject);
+        if (currentHealth <= 0)
+        {
+            // Check if the object is still valid before interacting with it
+            NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
+            if (networkObject != null && IsServer) // Only despawn on the server
+            {
+                networkObject.Despawn(); // Despawn it from the network
+            }
+
+            // Destroy the object only if it's not null
+            if (gameObject != null)
+            {
+                Destroy(gameObject); // Clean up the object locally
+            }
+        }
 
         OnHit();
     }
+
     
     public void OnHit()
     {

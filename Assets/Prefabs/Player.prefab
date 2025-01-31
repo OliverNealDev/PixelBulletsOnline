@@ -307,13 +307,13 @@ MonoBehaviour:
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
+  SyncPositionZ: 0
+  SyncRotAngleX: 0
+  SyncRotAngleY: 0
   SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -361,6 +361,9 @@ MonoBehaviour:
   bulletSpeed: 4
   bulletDamage: 1
   bulletSize: 1
+  turretTransform: {fileID: 3514252730636395783}
+  recoilAmount: 0.2
+  recoilDuration: 0.25
 --- !u!61 &3641624397890560642
 BoxCollider2D:
   m_ObjectHideFlags: 0

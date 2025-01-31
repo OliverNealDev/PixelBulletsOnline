@@ -58,6 +58,8 @@ public class PlayerCamera : NetworkBehaviour
 
     void Update()
     {
+        if (!IsOwner) return;
+        
         // Handle camera zoom with the mouse scroll wheel
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scrollInput) > 0.01f) // Small threshold to ignore tiny scrolls
