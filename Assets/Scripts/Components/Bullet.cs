@@ -1,26 +1,42 @@
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Serialization;
 
 public class Bullet : NetworkBehaviour
 {
     public NetworkVariable<float> bulletDamage = new NetworkVariable<float>(); // Networked damage
+    //public Vector2 velocityToAdd;
     public NetworkVariable<bool> isPlayerBullet = new NetworkVariable<bool>(); // Networked boolean for player bullet
     private SpriteRenderer spriteRenderer;
     private Collider2D bulletCollider;
     private bool hasHit; // Prevents multiple collisions
+    //public NetworkVariable<Vector2> velocity = new NetworkVariable<Vector2>();
+    private Rigidbody2D rb;
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         bulletCollider = GetComponent<Collider2D>();
+        //rb = GetComponent<Rigidbody2D>();
+        
+        if (IsOwner) Invoke("Timeout", 5f);
+    }
 
-        if (!IsServer) return;
-        Invoke("Timeout", 5f);
+    
+    void Update()
+    {
+        if (!IsOwner)
+        {
+            // Clients apply velocity from the NetworkVariable
+            //rb.linearVelocity = velocity.Value;
+        }
     }
 
     public void Initialise(bool isPlayerBullet, float bulletDamage)
     {
+        if (!IsOwner) return;
+        
         this.isPlayerBullet.Value = isPlayerBullet; // Using NetworkVariable.Value to set the value
         this.bulletDamage.Value = bulletDamage; // Setting damage using NetworkVariable.Value
     }
@@ -28,9 +44,10 @@ public class Bullet : NetworkBehaviour
     void Timeout()
     {
         NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null && IsServer)
+        if (networkObject != null && IsOwner)
         {
             gameObject.GetComponent<NetworkObject>().Despawn();
+            Destroy(gameObject);
         }
 
         /*if (gameObject != null)
@@ -41,6 +58,8 @@ public class Bullet : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (!IsOwner) return;
+        
         if (hasHit) return; // Prevent multiple hits
         if ((other.tag == "Player" && !isPlayerBullet.Value) || (other.tag == "Enemy" && isPlayerBullet.Value))
         {
@@ -78,9 +97,10 @@ public class Bullet : NetworkBehaviour
         }
 
         NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null && IsServer)
+        if (networkObject != null && IsOwner)
         {
             gameObject.GetComponent<NetworkObject>().Despawn();
+            Destroy(gameObject);
         }
 
         /*if (gameObject != null)

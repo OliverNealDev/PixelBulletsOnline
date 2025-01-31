@@ -1,12 +1,15 @@
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode.Components;
 
 public class UPG_Basic : ShootClass
 {
     public Transform turretTransform; // Assign in Inspector (Child Object)
     public float recoilAmount = 0.2f; // How much the turret moves backward
     public float recoilDuration = 0.25f; // How long it takes to return
+
+    private GameObject spawnedBullet;
 
     void Update()
     {
@@ -21,7 +24,7 @@ public class UPG_Basic : ShootClass
         // Only trigger shooting if the player presses the fire button
         if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && canShoot)
         {
-            ShootServerRpc();  // Request the server to spawn the bullet
+            Shoot/*ServerRpc*/();  // Request the server to spawn the bullet
             bulletTimer = 0;
             canShoot = false;
 
@@ -30,8 +33,8 @@ public class UPG_Basic : ShootClass
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    void ShootServerRpc(ServerRpcParams rpcParams = default)
+    //[ServerRpc(RequireOwnership = false)]
+    void Shoot/*ServerRpc*/(/*ServerRpcParams rpcParams = default*/)
     {
         Debug.Log("Spawning bullet");
 
@@ -46,10 +49,30 @@ public class UPG_Basic : ShootClass
         bullet.GetComponent<Bullet>().Initialise(true, bulletDamage);
 
         // Bullet behavior and settings
-        bullet.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
-        bullet.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+        networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
+        //bullet.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
         bullet.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
+        
+        // Tell the client to update the bullet's position locally (client-side adjustment)
+        //ShootUpdateBulletPositionClientRpc(networkObject.NetworkObjectId);
     }
+    
+    [ClientRpc]
+    void ShootUpdateBulletPositionClientRpc(ulong networkObjectId, ClientRpcParams rpcParams = default)
+    {
+        // Find the network object on the client using its NetworkObjectId
+        NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId];
+
+        if (networkObject != null)
+        {
+            // Set the bullet's position based on the client’s position to ensure sync
+            networkObject.transform.position = transform.position + (transform.right / 2f);
+            networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
+            Debug.Log("synced bullet position");
+        }
+    }
+
+
 
     private IEnumerator RecoilEffect()
     {
