@@ -53,8 +53,8 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // Apply acceleration while preserving smooth movement
-        rb.linearVelocityX += moveInput.x * movementSpeed * Time.deltaTime;
-        rb.linearVelocityY += moveInput.y * movementSpeed * Time.deltaTime;
+        rb.linearVelocityX += moveInput.x * movementSpeed * Time.fixedDeltaTime;
+        rb.linearVelocityY += moveInput.y * movementSpeed * Time.fixedDeltaTime;
     }
 
 

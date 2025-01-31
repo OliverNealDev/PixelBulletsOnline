@@ -62,19 +62,28 @@ public class PlayerCamera : NetworkBehaviour
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scrollInput) > 0.01f) // Small threshold to ignore tiny scrolls
         {
-            desiredOrthographicSize = Mathf.Clamp(currentOthorgraphicSize - scrollInput * scrollSpeed, minOthorgraphicSize, maxOthorgraphicSize);
+            // Set the target zoom level
+            desiredOrthographicSize -= scrollInput * scrollSpeed;
+            desiredOrthographicSize = Mathf.Clamp(desiredOrthographicSize, minOthorgraphicSize, maxOthorgraphicSize);
         }
-        
-        // Smoothly zoom the camera to the target position
-        float smoothedOrthographicSize = Mathf.Lerp(playerCamera.orthographicSize, desiredOrthographicSize, smoothSpeed);
-        playerCamera.orthographicSize = smoothedOrthographicSize;
+
+        // Smoothly interpolate the zoom level
+        playerCamera.orthographicSize = Mathf.Lerp(playerCamera.orthographicSize, desiredOrthographicSize, smoothSpeed * Time.deltaTime);
     }
 
     // Zoom function for the camera
     private void Zoom(float scrollInput)
     {
-        playerCamera.orthographicSize = Mathf.Clamp(currentOthorgraphicSize - scrollInput * scrollSpeed, minOthorgraphicSize, maxOthorgraphicSize);
+        // Update current zoom level
+        currentOthorgraphicSize -= scrollInput * scrollSpeed;
+
+        // Clamp to keep zoom within min/max bounds
+        currentOthorgraphicSize = Mathf.Clamp(currentOthorgraphicSize, minOthorgraphicSize, maxOthorgraphicSize);
+
+        // Apply the zoom to the camera
+        playerCamera.orthographicSize = currentOthorgraphicSize;
     }
+
 
     private void DeactivateMenuCamera()
     {

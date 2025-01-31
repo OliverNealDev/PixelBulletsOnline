@@ -34,9 +34,9 @@ public class UPG_Basic : ShootClass
             canShoot = false;
             
             Debug.Log("spawningbullet");
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            GameObject bullet = Instantiate(bulletPrefab, transform.position + (transform.right / 2f), Quaternion.identity);
             bullet.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
-            bullet.GetComponent<Rigidbody2D>().linearVelocity += GetComponent<Rigidbody2D>().linearVelocity;
+            bullet.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
             bullet.GetComponent<Bullet>().bulletDamage = bulletDamage;
             bullet.GetComponent<Bullet>().isPlayerBullet = true;
             bullet.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
