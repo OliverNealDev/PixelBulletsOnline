@@ -17,7 +17,7 @@ public class PlayerCamera : NetworkBehaviour
     [Header("Camera Offset Settings")]
     public float currentOthorgraphicSize = 5; // Offset behind and above the turret
     public float minOthorgraphicSize = 1; // Minimum camera offset
-    public float maxOthorgraphicSize = 10; // Maximum camera offset
+    public float maxOthorgraphicSize = 5; // Maximum camera offset
     public float scrollSpeed = 2; // Scroll speed for zooming
     public float desiredOrthographicSize;
 

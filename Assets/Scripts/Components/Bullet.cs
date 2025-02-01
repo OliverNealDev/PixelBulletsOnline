@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 public class Bullet : NetworkBehaviour
 {
     public NetworkVariable<float> bulletDamage = new NetworkVariable<float>(); // Networked damage
+
+    public GameObject bulletOwner;
     //public Vector2 velocityToAdd;
     public NetworkVariable<bool> isPlayerBullet = new NetworkVariable<bool>(); // Networked boolean for player bullet
     private SpriteRenderer spriteRenderer;
@@ -54,12 +56,13 @@ public class Bullet : NetworkBehaviour
         }
     }
 
-    public void Initialise(bool isPlayerBullet, float bulletDamage)
+    public void Initialise(bool isPlayerBullet, float bulletDamage, GameObject bulletOwner)
     {
         if (!IsOwner) return;
         
         this.isPlayerBullet.Value = isPlayerBullet; // Using NetworkVariable.Value to set the value
         this.bulletDamage.Value = bulletDamage; // Setting damage using NetworkVariable.Value
+        this.bulletOwner = bulletOwner;
     }
 
     public void FadeOut()
