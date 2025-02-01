@@ -136,6 +136,8 @@ MonoBehaviour:
   rotationSpeed: 10
   maxSpeed: 6
   meleeDamage: 1
+  xpValue: 5
+  MaxHealth: 3
 --- !u!114 &3454587894023193745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,4 +267,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  maxHealth: 3

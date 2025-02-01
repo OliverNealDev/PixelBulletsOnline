@@ -32,9 +32,7 @@ public class UPG_Basic : ShootClass
             StartCoroutine(RecoilEffect());
         }
     }
-
-    //[ServerRpc(RequireOwnership = false)]
-    void Shoot/*ServerRpc*/(/*ServerRpcParams rpcParams = default*/)
+    void Shoot()
     {
         Debug.Log("Spawning bullet");
 
@@ -47,17 +45,14 @@ public class UPG_Basic : ShootClass
 
         // Initialize the bullet with proper properties
         bullet.GetComponent<Bullet>().Initialise(true, bulletDamage);
+        
 
         // Bullet behavior and settings
-        networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
-        //bullet.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+        networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed; 
         bullet.transform.localScale = new Vector3(bulletSize, bulletSize, bulletSize);
-        
-        // Tell the client to update the bullet's position locally (client-side adjustment)
-        //ShootUpdateBulletPositionClientRpc(networkObject.NetworkObjectId);
     }
     
-    [ClientRpc]
+    /*[ClientRpc]
     void ShootUpdateBulletPositionClientRpc(ulong networkObjectId, ClientRpcParams rpcParams = default)
     {
         // Find the network object on the client using its NetworkObjectId
@@ -67,10 +62,11 @@ public class UPG_Basic : ShootClass
         {
             // Set the bullet's position based on the client’s position to ensure sync
             networkObject.transform.position = transform.position + (transform.right / 2f);
-            networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
+            //networkObject.GetComponent<Rigidbody2D>().linearVelocity = transform.right * bulletSpeed;
+            //networkObject.GetComponent<Bullet>().velocity = new NetworkVariable<Vector2>(transform.right * bulletSpeed);
             Debug.Log("synced bullet position");
         }
-    }
+    }*/
 
 
 

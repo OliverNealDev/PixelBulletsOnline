@@ -11,16 +11,37 @@ public class Bullet : NetworkBehaviour
     private SpriteRenderer spriteRenderer;
     private Collider2D bulletCollider;
     private bool hasHit; // Prevents multiple collisions
-    //public NetworkVariable<Vector2> velocity = new NetworkVariable<Vector2>();
+    public NetworkVariable<Vector2> velocity = new NetworkVariable<Vector2>();
     private Rigidbody2D rb;
 
+    public GameObject bulletsTransform;
+    
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         bulletCollider = GetComponent<Collider2D>();
-        //rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         
-        if (IsOwner) Invoke("Timeout", 5f);
+        if (IsOwner) Invoke("FadeOut", 5f);
+        
+        if (!IsOwner)
+        {
+            if (!NetworkObject.IsSpawned)
+                Destroy(gameObject);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (!IsOwner) return;
+        
+        // Bullets freeze and cannot be despawned when a client late-joins. This is a solution that I'd prefer to fix differently.
+        if (rb.linearVelocity == Vector2.zero) Invoke("DoubleCheckZeroVelocity", 0.25f);
+    }
+
+    void DoubleCheckZeroVelocity()
+    {
+        if (rb.linearVelocity == Vector2.zero) gameObject.GetComponent<NetworkObject>().Despawn(); Destroy(gameObject);
     }
 
     
@@ -40,36 +61,34 @@ public class Bullet : NetworkBehaviour
         this.isPlayerBullet.Value = isPlayerBullet; // Using NetworkVariable.Value to set the value
         this.bulletDamage.Value = bulletDamage; // Setting damage using NetworkVariable.Value
     }
-    
-    void Timeout()
-    {
-        NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
-        if (networkObject != null && IsOwner)
-        {
-            gameObject.GetComponent<NetworkObject>().Despawn();
-            Destroy(gameObject);
-        }
 
-        /*if (gameObject != null)
-        {
-            Destroy(gameObject);
-        }*/
+    public void FadeOut()
+    {
+        StartCoroutine(FadeAndEnlarge()); // Start fade/scale effect
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    /*void OnTriggerEnter2D(Collider2D other)
     {
         if (!IsOwner) return;
         
         if (hasHit) return; // Prevent multiple hits
-        if ((other.tag == "Player" && !isPlayerBullet.Value) || (other.tag == "Enemy" && isPlayerBullet.Value))
+        
+        // Server health
+        if ((other.tag == "Enemy" && isPlayerBullet.Value) ||
+            (other.tag == "Bitrock"))
         {
-            Debug.Log(other.tag);
-            Debug.Log(isPlayerBullet);
+            //Debug.Log(other.tag);
+            //Debug.Log(isPlayerBullet);
             
             other.GetComponent<Health>()?.ReceiveDamage(bulletDamage.Value);
             StartCoroutine(FadeAndEnlarge()); // Start fade/scale effect
         }
-    }
+        else if (other.tag == "Player" && !isPlayerBullet.Value)
+        {
+            other.GetComponent<Health>()?.ReceiveDamage(bulletDamage.Value);
+            StartCoroutine(FadeAndEnlarge()); // Start fade/scale effect
+        }
+    }*/
 
     private IEnumerator FadeAndEnlarge()
     {

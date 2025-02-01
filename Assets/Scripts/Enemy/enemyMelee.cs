@@ -9,11 +9,18 @@ public class EnemyMelee : NetworkBehaviour
     public float maxSpeed = 5f;
     public float meleeDamage = 10f;
     private Rigidbody2D rb;
+    
+    public float xpValue;
+
+    public float MaxHealth;
+    private float currentHealth;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-
+        if (!IsServer) return;
+        currentHealth = MaxHealth;
+        
         //if (!IsServer) return;
         
         //StartCoroutine(TickMovement()); // Start the ticking system
@@ -93,11 +100,35 @@ public class EnemyMelee : NetworkBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             // Deal damage to player
-            collision.gameObject.GetComponent<Health>()?.ReceiveDamage(meleeDamage);
+            //collision.gameObject.GetComponent<HitEffect>()?.OnHitEffect();
 
             // Calculate bounce direction (away from the player)
             Vector2 bounceDirection = (transform.position - collision.transform.position).normalized;
 
+            // Apply force to bounce away
+            float bounceForce = 5f; // Adjust as needed
+            rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);
+        }
+        else if (collision.gameObject.CompareTag("Bullet"))
+        {
+            Bullet bullet = collision.gameObject.GetComponent<Bullet>();
+
+            currentHealth -= bullet.bulletDamage.Value;
+            bullet.FadeOut();
+
+            if (currentHealth <= 0)
+            {
+                NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
+                if (networkObject != null && IsOwner)
+                {
+                    gameObject.GetComponent<NetworkObject>().Despawn();
+                    Destroy(gameObject);
+                }
+            }
+
+            // Calculate bounce direction (away from the player)
+            Vector2 bounceDirection = (transform.position - collision.transform.position).normalized;
+            
             // Apply force to bounce away
             float bounceForce = 5f; // Adjust as needed
             rb.AddForce(bounceDirection * bounceForce, ForceMode2D.Impulse);

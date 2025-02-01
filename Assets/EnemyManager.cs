@@ -24,7 +24,7 @@ public class EnemyManager : NetworkBehaviour
         enemySpawnTimer += Time.deltaTime;
         if (enemySpawnTimer >= enemySpawnCooldown)
         {
-            SpawnEnemies(enemyMeleeOne, enemySpawnAmountPerPlayer);
+            //SpawnEnemies(enemyMeleeOne, enemySpawnAmountPerPlayer);
             enemySpawnTimer = 0;
         }
     }

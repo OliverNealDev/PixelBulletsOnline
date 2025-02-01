@@ -3,68 +3,45 @@ using UnityEngine;
 using System.Collections;
 using Unity.Netcode;
 
-public class Health : NetworkBehaviour
+public class HitEffect : NetworkBehaviour
 {
-    public float maxHealth = 100f;
-    private NetworkVariable<float> currentHealth = new NetworkVariable<float>();
-
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
 
     void Start()
     {
-        // Initialize health value (this should be done only on the server)
-        if (IsServer)
-        {
-            currentHealth.Value = maxHealth;
-        }
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
     }
 
     // Method to call from client to apply damage (ServerRpc)
-    public void ReceiveDamage(float damage)
+    public void OnHitEffect()
     {
         OnHitClientRpc();
         
         // Only allow server to apply damage to health
-        if (IsServer)
+        if (IsOwner)
         {
-            ApplyDamage(damage);
+            OnHitPlayers();
+            Debug.Log("I own this!");
         }
-        else
+        else // kinda sure this else statement causes errors and isn't needed but no probably wrong leave it
         {
             // Request the server to apply damage (for non-owned entities like enemies)
-            ReceiveDamageServerRpc(damage);
+            BeginOnHitEffectForAllServerRpc();
         }
     }
-
+    
     [ServerRpc(RequireOwnership = false)]
-    private void ReceiveDamageServerRpc(float damage)
+    private void BeginOnHitEffectForAllServerRpc()
     {
         // Server applies damage (called by the client, but server must process it)
-        ApplyDamage(damage);
+        OnHitPlayers();
     }
 
-    private void ApplyDamage(float damage)
+    private void OnHitPlayers()
     {
         OnHit();
-        
-        // Update health on server-side (this modifies the health variable)
-        currentHealth.Value -= damage;
-
-        // Check if the object is out of health (only on the server)
-        if (currentHealth.Value <= 0)
-        {
-            // Despawn the enemy or player on the server
-            NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
-            if (networkObject != null && IsServer) // Ensure this is done on server
-            {
-                networkObject.Despawn();
-            }
-        }
-        
         ShowHitEffectClientRpc();
     }
 
