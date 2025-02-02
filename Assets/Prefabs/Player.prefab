@@ -12,15 +12,14 @@ GameObject:
   - component: {fileID: 6158039278440086204}
   - component: {fileID: 3446862831100955744}
   - component: {fileID: -3313546211739734379}
-  - component: {fileID: 5954153239787434552}
   - component: {fileID: -7656356744654913250}
   - component: {fileID: -5754726703114520586}
   - component: {fileID: 3901497099989493949}
   - component: {fileID: -4542345888634495332}
   - component: {fileID: -8512656988340120945}
-  - component: {fileID: 3641624397890560642}
   - component: {fileID: -3432525586965765127}
   - component: {fileID: 4043015392359459721}
+  - component: {fileID: 2762569047505013299}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -146,20 +145,6 @@ MonoBehaviour:
   scrollSpeed: 5
   desiredOrthographicSize: 10
   smoothSpeed: 10
---- !u!114 &5954153239787434552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4280118651270339216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c059616328eb3594db5de95e341b3534, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  movementSpeed: 15
 --- !u!50 &-7656356744654913250
 Rigidbody2D:
   serializedVersion: 5
@@ -268,23 +253,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   bulletPrefab: {fileID: 100729451471516124, guid: fe2d47ea5b422154b957c74d0f29b0a8, type: 3}
-  bulletCooldown: 0.6
-  bulletTimer: 0
   canShoot: 0
-  bulletSpeed: 4
+  bulletTimer: 0
+  currentHealth: 10
+  movementSpeed: 0
+  bulletCooldown: 0.6
+  bulletSpeed: 6
   bulletDamage: 1
   bulletSize: 1
   maxHealth: 10
-  currentHealth: 10
+  meleeDamage:
+    m_InternalValue: 0
   turretRecoilAmount: 0.15
   playerRecoilAmount: 1
   DefaultPrefab: {fileID: 3574700581420482297, guid: 67e55de72ad58aa41ae6604f1e6c188a, type: 3}
   TwinsPrefab: {fileID: 3304036194596539448, guid: 7a79ea455e8daac40a18f07d81606b2e, type: 3}
+  KnightPrefab: {fileID: 4940513624582458801, guid: 601140c77ea5ba14ca4a4bc14d0fec88, type: 3}
   turretTransform: {fileID: 0}
   recoilDuration: 0.25
-  currentUpgrade: 1
---- !u!61 &3641624397890560642
-BoxCollider2D:
+  currentUpgrade:
+    m_InternalValue: 0
+--- !u!114 &-3432525586965765127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4280118651270339216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f917314d2fc239f4b9d685abb3e2ee81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &4043015392359459721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4280118651270339216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 209799bbc1be9eb44b211320ff3902c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  BitrockManager: {fileID: 3684451536014686988, guid: 69a1af08c27cb66408d539c16131847f, type: 3}
+  EnemyManager: {fileID: 1389261352881110224, guid: 7a0f25809f50cc748bfd5bb3ef7228cb, type: 3}
+--- !u!58 &2762569047505013299
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -318,40 +336,4 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.5, y: 1.5}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.5, y: 0.5}
-  m_EdgeRadius: 0
---- !u!114 &-3432525586965765127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4280118651270339216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f917314d2fc239f4b9d685abb3e2ee81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &4043015392359459721
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4280118651270339216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 209799bbc1be9eb44b211320ff3902c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  m_Radius: 0.5

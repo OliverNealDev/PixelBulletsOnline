@@ -17,22 +17,17 @@ public class BitrockManager : NetworkBehaviour
     
     private GameObject randomBitrock;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    
+    
     void Update()
     {
-        if (!IsServer) return;
+        //if (!IsOwnedByServer) Debug.Log("not the owned by server as bitrock manager");
+        //if (!IsOwnedByServer) return;
         
         bitrockSpawnTimer += Time.deltaTime;
         if (bitrockSpawnTimer >= bitrockSpawnCooldown)
         {
             bitrockSpawnTimer -= bitrockSpawnCooldown;
-
             CountBitrocks();
             SpawnBitrocks(targetBitrockCount - currentBitrockCount);
         }
@@ -40,9 +35,10 @@ public class BitrockManager : NetworkBehaviour
 
     void CountBitrocks()
     {
-        if (!IsServer) return;
+        //if (!IsOwnedByServer) return;
         
-        for (int i = 0; i < bitrocks.Count - 1; i++)
+        // Loop backwards so removal does not skip any entries.
+        for (int i = bitrocks.Count - 1; i >= 0; i--)
         {
             if (bitrocks[i] == null)
             {
@@ -53,49 +49,45 @@ public class BitrockManager : NetworkBehaviour
         currentBitrockCount = bitrocks.Count;
     }
 
-    void SpawnBitrocks(int Amount)
+    void SpawnBitrocks(int amount)
     {
-        if (!IsServer) return;
+        //if (!IsOwnedByServer) return;
         
-        // Prevent too many objects spawning in one execution
-        if (Amount > 50)
-        {
-            Amount = 50;
-        }
+        if (amount > 50) amount = 50;
 
-        for (int i = 0; i < Amount; i++)
+        for (int i = 0; i < amount; i++)
         {
             int rand = Random.Range(0, 101);
-            
-            // Common 16x16 bitrock
             if (rand < 51)
             {
                 randomBitrock = bitrock16Prefab;
             }
-            
-            // Uncommon 24x24 bitrock
             else if (rand < 81)
             {
                 randomBitrock = bitrock24Prefab;
             }
-            
-            // Rare 32x32 bitrock
             else if (rand < 101)
             {
                 randomBitrock = bitrock32Prefab;
             }
-
-            // Catch an error if this happens
             else
             {
-                Debug.LogError("unknown bitrock picked!"); return;
+                Debug.LogError("unknown bitrock picked!");
+                return;
             }
 
             Vector2 randomBitrockSpawnPosition = new Vector2(Random.Range(-100f, 100f), Random.Range(-100f, 100f));
-            
             GameObject bitrock = Instantiate(randomBitrock, randomBitrockSpawnPosition, Quaternion.identity);
-            bitrock.GetComponent<NetworkObject>().Spawn();
+            NetworkObject bitrockNetObj = bitrock.GetComponent<NetworkObject>();
+
+            // Force the server as the owner by using the server's client ID (typically 0)
+            bitrockNetObj.SpawnWithOwnership(NetworkManager.ServerClientId);
+
+            //Debug.Log("I spawned a bitrock!");
+            //Debug.Log("Bitrock OwnerClientId: " + bitrockNetObj.OwnerClientId);
+
             bitrocks.Add(bitrock);
+
         }
     }
 }

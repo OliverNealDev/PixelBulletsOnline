@@ -7,7 +7,9 @@ public class Bullet : NetworkBehaviour
 {
     public NetworkVariable<float> bulletDamage = new NetworkVariable<float>(); // Networked damage
 
-    public GameObject bulletOwner;
+    //public NetworkVariable<GameObject> bulletOwner = new NetworkVariable<GameObject>(); // Networked boolean for player bullet;
+    public NetworkVariable<NetworkObjectReference> bulletOwner = new NetworkVariable<NetworkObjectReference>();
+
     //public Vector2 velocityToAdd;
     public NetworkVariable<bool> isPlayerBullet = new NetworkVariable<bool>(); // Networked boolean for player bullet
     private SpriteRenderer spriteRenderer;
@@ -56,14 +58,26 @@ public class Bullet : NetworkBehaviour
         }
     }
 
-    public void Initialise(bool isPlayerBullet, float bulletDamage, GameObject bulletOwner)
+    public void Initialise(bool isPlayerBullet, float bulletDamage, NetworkObject owner)
     {
         if (!IsOwner) return;
-        
-        this.isPlayerBullet.Value = isPlayerBullet; // Using NetworkVariable.Value to set the value
-        this.bulletDamage.Value = bulletDamage; // Setting damage using NetworkVariable.Value
-        this.bulletOwner = bulletOwner;
+
+        this.isPlayerBullet.Value = isPlayerBullet;
+        this.bulletDamage.Value = bulletDamage;
+
+        // Ensure the bullet owner is properly set using NetworkObjectReference
+        if (owner != null)
+        {
+            this.bulletOwner.Value = new NetworkObjectReference(owner);
+            Debug.Log("Bullet owner assigned: " + owner.name);
+        }
+        else
+        {
+            Debug.Log("Owner is NULL when setting bulletOwner!");
+        }
     }
+
+
 
     public void FadeOut()
     {
